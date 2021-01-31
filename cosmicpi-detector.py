@@ -22,7 +22,8 @@ def on_connect(client,userdata,flags,rc):
     else:
         print("mqtt connection failed")
 
-client1= paho.Client("control1")
+mqttidentstring = str(uuid.getnode())
+client1= paho.Client(mqttidentstring)
 client1.on_publish = on_publish
 client1.username_pw_set(username="cosmicpi",password="MuonsFROMSp8ce")
 client1.on_connect=on_connect #binding call
