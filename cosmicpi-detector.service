@@ -1,0 +1,13 @@
+[Unit]
+Description=My Script Service
+After=network-online.target
+
+[Service]
+User=cosmicpi
+Type=idle
+ExecStart=/usr/bin/python /home/cosmicpi/cosmicpi-detector.py
+Restart=on-failure
+RestartSec=10s
+
+[Install]
+WantedBy=multi-user.target
