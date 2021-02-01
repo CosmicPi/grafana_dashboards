@@ -1,0 +1,13 @@
+[Unit]
+Description=My Script Service
+After=network-online.target
+
+[Service]
+User=pingu_98
+Type=idle
+ExecStart=/usr/bin/python /home/pingu_98/grafana_dashboards/server-influx.py
+Restart=on-failure
+RestartSec=10s
+
+[Install]
+WantedBy=multi-user.target
