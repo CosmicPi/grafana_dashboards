@@ -168,8 +168,8 @@ while True:
             data.append("{measurement},id={DeviceID} lat={latitude},lon={longitude},Temp={Temp},Hum={Hum},Accelx={Accelx},Accely={Accely},Accelz={Accelz},Magx={Magx},Magy={Magy},Magz={Magz},Press={Pressx},Alt={Altx} {timestamp}"
             .format(measurement='CosmicPiV1.8.1',
                     DeviceID=cosmicdict['DeviceID'],
-                    latitude=cosmicdict['Longitude'],
-                    longitude=cosmicdict['Latitude'],
+                    latitude=cosmicdict['Latitude'],
+                    longitude=cosmicdict['Longitude'],
                     Temp=cosmicdict['TemperatureC'],
                     Hum=cosmicdict['Humidity'],
                     Accelx=cosmicdict['AccelX'],
