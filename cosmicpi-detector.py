@@ -22,6 +22,9 @@ def on_connect(client,userdata,flags,rc):
     else:
         print("mqtt connection failed")
 
+def on_disconnect(client,userdata,rc):
+    print("disconnecting reason " + str(rc))
+        
 mqttidentstring = str(uuid.getnode())
 client1= paho.Client(mqttidentstring)
 client1.on_publish = on_publish
@@ -71,15 +74,16 @@ print ("The device ID using uuid1() is : ",end="")
 print (uuid.getnode())
 cosmicdict['DeviceID']=uuid.getnode()
 
-print("MQTT connection")
-if mqtt_ok==1:
-    client1.connect(broker,port)
-#return 0
-
 print("DB connection")
 client = InfluxDBClient(host='localhost', port=8086)
 client.create_database('cosmicpilocal')
 data=[]
+
+print("MQTT connection")
+if mqtt_ok==1:
+    client1.connect(broker,port)
+    client1.loop_start()
+#return 0
 
 #ser.write("help\n");
 while True:
