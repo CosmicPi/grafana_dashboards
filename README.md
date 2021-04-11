@@ -1,5 +1,17 @@
 # grafana_dashboards
 Cosmic Pi V1.8.1 software: Grafana Visualisations.
+
+## Release notes:
+The most recent updates create a persistent MQTT connection to the global dashboard and database. Without this, your connection may fail, and will not automatically reconnect. All units using the grafana dashboard are recommended to update with the instructions below.
+
+# Installation 
+To install this in a functional V1.8 unit, (changes to the dashboard were made before shipping, but not the python script) do the following:
+git clone https://github.com/CosmicPi/grafana_dashboards.git
+sudo copy /home/cosmicpi/grafana_dashboards/cosmicpi-detector.py /home/cosmicpi/cosmicpi-detector.py
+sudo reboot now
+That's all. 
+
+# About
 NB we're using InfluxDB under the hood and Grafana V6, since it's compatible with the Pi Zero W (ARM v6).
 The database look like this:
 Database: cosmicpilocal
