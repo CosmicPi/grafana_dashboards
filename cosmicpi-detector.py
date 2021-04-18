@@ -12,10 +12,15 @@ import paho.mqtt.client as paho
 #version 1.7 and 1.8 are identical, so use 1.8.1 for both
 #version 1.6 has a different timing configuration, use 1.6.1
 #version 1.5 has a different timing configuration again, use 1.5.1
-#this goes in all three ident strings.
+#this goes in the mqtt channel only.
+mqttchannel='cosmicpi/1.8.1'
+
+#do not change these, even if you have an earlier version 
+#this is because you will need to update your dashboard to read from a different measurement
+#not recommended! 
 hardwareversion='CosmicPiV1.8.1'
 hardwareversion_freq='CosmicPiV1.8.1_freq'
-mqttchannel='cosmicpi/1.8.1'
+
 
 broker="cosmicpidata.mooo.com"
 port=1883
