@@ -16,7 +16,9 @@ def on_connect(client,userdata,flags,rc):
         print("mqtt connection failed")
     client.subscribe("cosmicpi/worldmap/#")
     client.subscribe("cosmicpi/1.8.1/#")
-    
+    client.subscribe("cosmicpi/1.6.1/#")
+    client.subscribe("cosmicpi/1.5.1/#")
+    client.subscribe("iaq/0.1/#")
 # The callback for when a PUBLISH message is received from the server.
 #fix this up later
 def on_message(client, userdata, msg):
@@ -64,7 +66,50 @@ def on_message(client, userdata, msg):
                     timestamp=cosmicdict['time']))
         influx_client.write_points(data, time_precision='n', batch_size=1, protocol='line')
         #influx_client.write(addtodb)
-        print("wrote event")
+        print("wrote v1.8.1 event")
+    if msg.topic == "cosmicpi/1.5.1":
+        data = []
+        data.append("{measurement},id={DeviceID} lat={latitude},lon={longitude},Temp={Temp},Hum={Hum},Accelx={Accelx},Accely={Accely},Accelz={Accelz},Magx={Magx},Magy={Magy},Magz={Magz},Press={Pressx},Alt={Altx} {timestamp}"
+            .format(measurement='CosmicPiV1.5.1',
+                    DeviceID=cosmicdict['tags']['id'],
+                    latitude=cosmicdict['fields']['lat'],
+                    longitude=cosmicdict['fields']['lon'],
+                    Temp=cosmicdict['fields']['Temp'],
+                    Hum=cosmicdict['fields']['Hum'],
+                    Accelx=cosmicdict['fields']['Accelx'],
+                    Accely=cosmicdict['fields']['Accely'],
+                    Accelz=cosmicdict['fields']['Accelz'],
+                    Magx=cosmicdict['fields']['Magx'],
+                    Magy=cosmicdict['fields']['Magy'],
+                    Magz=cosmicdict['fields']['Magz'],
+                    Pressx=cosmicdict['fields']['Press'],
+                    Altx=cosmicdict['fields']['Alt'],
+                    timestamp=cosmicdict['time']))
+        influx_client.write_points(data, time_precision='n', batch_size=1, protocol='line')
+        #influx_client.write(addtodb)
+        print("wrote v1.5.1 event")
+    
+    if msg.topic == "cosmicpi/1.6.1":
+        data = []
+        data.append("{measurement},id={DeviceID} lat={latitude},lon={longitude},Temp={Temp},Hum={Hum},Accelx={Accelx},Accely={Accely},Accelz={Accelz},Magx={Magx},Magy={Magy},Magz={Magz},Press={Pressx},Alt={Altx} {timestamp}"
+            .format(measurement='CosmicPiV1.6.1',
+                    DeviceID=cosmicdict['tags']['id'],
+                    latitude=cosmicdict['fields']['lat'],
+                    longitude=cosmicdict['fields']['lon'],
+                    Temp=cosmicdict['fields']['Temp'],
+                    Hum=cosmicdict['fields']['Hum'],
+                    Accelx=cosmicdict['fields']['Accelx'],
+                    Accely=cosmicdict['fields']['Accely'],
+                    Accelz=cosmicdict['fields']['Accelz'],
+                    Magx=cosmicdict['fields']['Magx'],
+                    Magy=cosmicdict['fields']['Magy'],
+                    Magz=cosmicdict['fields']['Magz'],
+                    Pressx=cosmicdict['fields']['Press'],
+                    Altx=cosmicdict['fields']['Alt'],
+                    timestamp=cosmicdict['time']))
+        influx_client.write_points(data, time_precision='n', batch_size=1, protocol='line')
+        #influx_client.write(addtodb)
+        print("wrote v1.5.1 event")
     if msg.topic == "cosmicpi/worldmap":
         data = []
         data.append("{measurement},id={DeviceID} geohash={geohash_pos},event_count={event_count} {timestamp}"
@@ -75,6 +120,23 @@ def on_message(client, userdata, msg):
                     timestamp=cosmicdict['time']))
         influx_client.write_points(data, time_precision='s', batch_size=1, protocol='line')
         print("wrote mappoint")
+
+    #this has nothing to do with cosmic pi, it's just a side project I'm running to monitor air quality at home.    
+    if msg.topic == "iaq/0.1":
+        data = []
+        data.append("{measurement},id={DeviceID} Temp={temp},Press={press},Hum={hum},Gas={gas},IAQ={iaq},eCO2={eco2},TVOC={tvoc} {timestamp}"
+            .format(measurement='IAQv0.1',
+                    DeviceID=cosmicdict['tags']['id'],
+                    temp=cosmicdict['fields']['Temp'],
+                    press=cosmicdict['fields']['Press'],
+                    hum=cosmicdict['fields']['Hum'],
+                    gas=cosmicdict['fields']['Gas'],
+                    iaq=cosmicdict['fields']['IAQ'],
+                    eco2=cosmicdict['fields']['eCO2'],
+                    tvoc=cosmicdict['fields']['TVOC'],
+                    timestamp=cosmicdict['time']))
+        influx_client.write_points(data, time_precision='s', batch_size=1, protocol='line')
+        print("wrote iaq")
 
 client1= mqtt.Client("master")
 #client1.on_publish = on_publish
