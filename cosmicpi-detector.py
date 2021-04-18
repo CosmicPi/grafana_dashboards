@@ -1,4 +1,4 @@
-from influxdb import InfluxDBClient
+import InfluxDBClient
 import requests
 import serial
 import geohash
@@ -7,6 +7,15 @@ import random
 import time
 import datetime
 import paho.mqtt.client as paho
+
+#define the versions for earlier units
+#version 1.7 and 1.8 are identical, so use 1.8.1 for both
+#version 1.6 has a different timing configuration, use 1.6.1
+#version 1.5 has a different timing configuration again, use 1.5.1
+#this goes in all three ident strings.
+hardwareversion='CosmicPiV1.8.1'
+hardwareversion_freq='CosmicPiV1.8.1_freq'
+mqttchannel='cosmicpi/1.8.1'
 
 broker="cosmicpidata.mooo.com"
 port=1883
@@ -87,8 +96,9 @@ if mqtt_ok==1:
 
 #ser.write("help\n");
 while True:
-    line = ser.readline();
-    if line:
+    try:
+        line = ser.readline();
+    #if line:
         #print(line.decode('utf-8'))
         line_str = str(line.decode('utf-8'))
         data_type = line_str.split(':')[0]
@@ -141,7 +151,7 @@ while True:
                     geohash_pos="\""+geohash.encode(lat,lon)+"\""
                     data = []
                     data.append("{measurement},id={DeviceID} geohash={geohash_pos},event_count={event_count} {timestamp}"
-                    .format(measurement='CosmicPiV1.8.1_freq',
+                    .format(measurement=hardwareversion_freq,
                             DeviceID=cosmicdict['DeviceID'],
                             geohash_pos=geohash_pos,
                             event_count=eventcount,
@@ -170,7 +180,7 @@ while True:
             eventcount = eventcount + 1
             data = []
             data.append("{measurement},id={DeviceID} lat={latitude},lon={longitude},Temp={Temp},Hum={Hum},Accelx={Accelx},Accely={Accely},Accelz={Accelz},Magx={Magx},Magy={Magy},Magz={Magz},Press={Pressx},Alt={Altx} {timestamp}"
-            .format(measurement='CosmicPiV1.8.1',
+            .format(measurement=hardwareversion,
                     DeviceID=cosmicdict['DeviceID'],
                     latitude=cosmicdict['Latitude'],
                     longitude=cosmicdict['Longitude'],
@@ -188,4 +198,6 @@ while True:
             print(data)
             client.write_points(data, database='cosmicpilocal', time_precision='n', batch_size=1, protocol='line')
             if mqtt_ok==1:
-                ret = client1.publish("cosmicpi/1.8.1",str(data))
+                ret = client1.publish(mqttchannel,str(data))
+    except:
+        pass
