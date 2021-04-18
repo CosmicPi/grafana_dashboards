@@ -1,4 +1,4 @@
-import InfluxDBClient
+from influxdb import InfluxDBClient
 import requests
 import serial
 import geohash
