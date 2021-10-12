@@ -113,12 +113,12 @@ while True:
         if data_type in cosmicdict.keys():
             data = line_str.split(':')[1].split(';')[0]
             cosmicdict[data_type] = float(data)
-        if (data_type == "PPS"):
-            print("found a pps")
-            gps_lock_sting = line_str.split(':')[2]
-            gps_lock_sting = gps_lock_sting.split(';')[0]
-            if (len(gps_lock_sting) == 1):
-                cosmicdict['UTCUnixTime'] += 1
+        #if (data_type == "PPS"):
+            #print("found a pps")
+            #gps_lock_sting = line_str.split(':')[2]
+            #gps_lock_sting = gps_lock_sting.split(';')[0]
+            #if (len(gps_lock_sting) == 1):
+                #cosmicdict['UTCUnixTime'] += 1
         gps_type = line_str.split(',')[0]
         if gps_type == "$GPZDA" or gps_type == "$GNZDA":
             if (line_str.count(',') == 6):
@@ -152,6 +152,55 @@ while True:
                         lon = -lon
                 cosmicdict['Latitude'] = lat
                 cosmicdict['Longitude'] = lon
+                if (eventcount >= 0) :
+                    geohash_pos="\""+geohash.encode(lat,lon)+"\""
+                    data = []
+                    data.append("{measurement},id={DeviceID} geohash={geohash_pos},event_count={event_count} {timestamp}"
+                    .format(measurement=hardwareversion_freq,
+                            DeviceID=cosmicdict['DeviceID'],
+                            geohash_pos=geohash_pos,
+                            event_count=eventcount,
+                            timestamp=int(cosmicdict['UTCUnixTime'])))
+                    print(data)
+                    client.write_points(data, database='cosmicpilocal', time_precision='s', batch_size=1, protocol='line')
+                    eventcount=0
+                    if mqtt_ok==1:
+                        ret = client1.publish("cosmicpi/worldmap",str(data))
+        if gps_type == "$GPRMC":
+                # added this type to cope with broken GPS receivers, where the GPGGA and GNZDA strings aren't sent.
+                # (in fact GPRMC is the default output of 99% of all GPS chipsets, I don't know why we didn't use it from day 1)
+                # sanity check
+                if (line_str.count(',') == 12):
+                # use this as documentation for the string: http://aprs.gids.nl/nmea/#gprmc
+                    g_time_string = line_str.split(',')[1].split('.')[0]  # has format hhmmss
+                    hour = int(g_time_string[0:2])
+                    minute = int(g_time_string[2:4])
+                    second = int(g_time_string[4:6])
+                    #time parsed now
+                    lat = line_str.split(',')[3]
+                    lat = float(lat[0:2])
+                    minutes = line_str.split(',')[2]
+                    minutes = float(minutes[2:len(minutes)])
+                    lat += minutes / 60.
+                    if line_str.split(',')[4] == 'S':
+                        lat = -lat
+                    lon = line_str.split(',')[5]
+                    lon = float(lon[0:3])
+                    minutes = line_str.split(',')[5]
+                    minutes = float(minutes[3:len(minutes)])
+                    lon += minutes / 60.
+                    if line_str.split(',')[6] == 'W':
+                        lon = -lon
+                    daycode = (line_str.split(',')[9])
+                    day = int(daycode[0:2])
+                    month = int(daycode[2:4])
+                    year = 2000+int(daycode[4:6])
+                    # Yes, I just introduced a millenium bug for a year 2099 roll over issue... 
+                    time_from_gps = datetime.datetime(year,month,day,hour,minute,second,tzinfo=None)
+                    cosmicdict['UTCUnixTime'] = (time_from_gps - datetime.datetime(1970, 1, 1)).total_seconds()
+                    cosmicdict['UTCUnixTime'] += 1
+                    cosmicdict['Latitude'] = lat
+                    cosmicdict['Longitude'] = lon
                 if (eventcount >= 0) :
                     geohash_pos="\""+geohash.encode(lat,lon)+"\""
                     data = []
