@@ -83,6 +83,7 @@ eventcount = 0
 
 print("starting")
 ser = serial.Serial(port='/dev/serial0', baudrate=115200, parity=serial.PARITY_NONE, stopbits=serial.STOPBITS_ONE, bytesize=serial.EIGHTBITS, timeout=1)
+#version 1.5 (based on Arduino DUE) uses a baud rate of 19200, change it above to see the data
 print("connected to: " + ser.portstr)
 print ("The device ID using uuid1() is : ",end="")
 print (uuid.getnode())
