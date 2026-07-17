@@ -42,6 +42,12 @@ def on_disconnect(client,userdata,rc):
 mqttidentstring = str(uuid.getnode())
 client1= paho.Client(mqttidentstring)
 client1.on_publish = on_publish
+# SECURITY NOTE: These MQTT credentials are hardcoded for convenience.
+# The MQTT server (cosmicpidata.mooo.com) has been spun down and was
+# only ever used to transmit non-sensitive cosmic ray detector telemetry
+# (temperature, pressure, magnetometer readings, GPS coordinates).
+# If the server is ever revived, these credentials should be moved to
+# environment variables and TLS (port 8883) should be enabled.
 client1.username_pw_set(username="cosmicpi",password="MuonsFROMSp8ce")
 client1.on_connect=on_connect #binding call
 

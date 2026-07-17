@@ -141,6 +141,9 @@ def on_message(client, userdata, msg):
 client1= mqtt.Client("master")
 #client1.on_publish = on_publish
 
+# SECURITY NOTE: These MQTT credentials are hardcoded for convenience.
+# The MQTT server has been spun down and was only used for non-sensitive
+# cosmic ray detector telemetry. If revived, move to env vars + enable TLS.
 client1.username_pw_set(username="cosmicpi",password="MuonsFROMSp8ce")
 client1.on_connect=on_connect #binding call
 
